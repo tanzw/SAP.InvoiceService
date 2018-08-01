@@ -1,0 +1,18 @@
+
+date£º 2018/08/01 21:36:23.206
+level£º Error
+logger£º SAP.InvoiceService.Invoice
+machinename£º Ø¼WELL 
+message£º Info
+appdomain£º 0002:/LM/W3SVC/2/ROOT-1-131776041631463505
+assembly-version£º Could not find value for entry assembly and version type Assembly
+basedir£º D:\Projects\SAP.InvoiceService\SAP.InvoiceService\ 
+callsite£º SAP.InvoiceService.Invoice.HelloWorld
+callsite-linenumber£º 29
+counter£º 1
+nlogdir£º C:\Users\well\AppData\Local\Temp\Temporary ASP.NET Files\vs\854ea851\2a4c251d\assembly\dl3\ab5d7cb6\00523f49_fe1ed401 
+processid£º 3068
+processname£º iisexpress
+specialfolder£º C:\Users\well\Desktop 
+stacktrace: RuntimeMethodInfo.UnsafeInvokeInternal => RuntimeMethodHandle.InvokeMethod => Invoice.HelloWorld
+-----------------------------------------------------------

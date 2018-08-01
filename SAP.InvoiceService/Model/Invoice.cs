@@ -5,7 +5,7 @@ using System.Web;
 
 namespace SAP.InvoiceService.Model
 {
-    public class Invoice
+    public class InvoiceModel
     {
         /// <summary>
         /// 单据主键
@@ -71,22 +71,53 @@ namespace SAP.InvoiceService.Model
         /// 金税账号
         /// </summary>
         public string GTSBankAct { get; set; }
+
+        /// <summary>
+        /// 开票地址+电话
+        /// </summary>
+        public string Contact { get; set; }
+
+        /// <summary>
+        /// 银行名称+金税帐号
+        /// </summary>
+        public string BankAccount { get; set; }
+
+        /// <summary>
+        /// 发票明细
+        /// </summary>
+        public List<Detail> DetailList { get; set; }
     }
 
     public class Detail
     {
-        public int DocEntry { get; set; }
-
+        /// <summary>
+        /// 行编号
+        /// </summary>
         public int LineNum { get; set; }
 
+        /// <summary>
+        /// 物料编号
+        /// </summary>
         public string ItemCode { get; set; }
 
+        /// <summary>
+        /// 数量
+        /// </summary>
         public decimal Quantity { get; set; }
 
+        /// <summary>
+        /// 计量单位
+        /// </summary>
         public string unitMsr { get; set; }
 
+        /// <summary>
+        /// 每行税率
+        /// </summary>
         public decimal VatPrcnt { get; set; }
 
+        /// <summary>
+        /// 含税总额
+        /// </summary>
         public decimal GTotalSC { get; set; }
     }
 
@@ -133,7 +164,7 @@ namespace SAP.InvoiceService.Model
         public string CardName { get; set; }
 
         /// <summary>
-        /// 税好
+        /// 税号
         /// </summary>
         public string GTSRegNum { get; set; }
 
@@ -158,20 +189,33 @@ namespace SAP.InvoiceService.Model
         public string GTSBankAct { get; set; }
 
         /// <summary>
-        /// 单据主键
+        /// 行编号
         /// </summary>
-        public int DocEntry1 { get; set; }
-
         public int LineNum { get; set; }
 
+        /// <summary>
+        /// 物料编号
+        /// </summary>
         public string ItemCode { get; set; }
 
+        /// <summary>
+        /// 数量
+        /// </summary>
         public decimal Quantity { get; set; }
 
+        /// <summary>
+        /// 计量单位
+        /// </summary>
         public string unitMsr { get; set; }
 
+        /// <summary>
+        /// 每行税率
+        /// </summary>
         public decimal VatPrcnt { get; set; }
 
+        /// <summary>
+        /// 含税总额
+        /// </summary>
         public decimal GTotalSC { get; set; }
     }
 
