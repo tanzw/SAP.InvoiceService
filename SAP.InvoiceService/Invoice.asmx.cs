@@ -35,7 +35,13 @@ namespace SAP.InvoiceService
             return "Hello World";
         }
 
-        public string Z9EAR()
+        /// <summary>
+        /// 下传函数
+        /// </summary>
+        /// <param name="DocEntry"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string Z9EAR(int DocEntry)
         {
             var json = string.Empty;
             var result = new SearchResult<List<InvoiceModel>>();
@@ -53,10 +59,19 @@ namespace SAP.InvoiceService
                 {
                     connection.Open();  //打开链接
                     var sql = "SELECT  * FROM \"BS_SBO_1970_AR\".\"CBIC_AR\"";
+                    if (DocEntry > 0)
+                    {
+                        sql = sql + " where DocEntry=:DocEntry";
+                    }
                     using (OdbcCommand command = new OdbcCommand(sql))  //command  对象
                     {
                         command.Connection = connection;
+                        if (DocEntry > 0)
+                        {
+                            command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry", DbType = DbType.Int32, Value = DocEntry });
+                        }
                         OdbcDataReader reader = command.ExecuteReader();
+
                         while (reader.Read())
                         {
                             list.Add(new InvoiceView()
