@@ -273,7 +273,7 @@ namespace SAP.InvoiceService
             return json;
         }
 
-        private string GetOdbcConnectionString()
+        private string GetOdbcConnectionString()    
         {
             try
             {
@@ -281,9 +281,9 @@ namespace SAP.InvoiceService
                 var uid = System.Configuration.ConfigurationManager.AppSettings["Uid"].ToString();
                 var pwd = System.Configuration.ConfigurationManager.AppSettings["Pwd"].ToString();
 
-                dsn = DES.Decrypt(dsn);
-                uid = DES.Decrypt(uid);
-                pwd = DES.Decrypt(pwd);
+                //dsn = DES.Decrypt(dsn);
+                //uid = DES.Decrypt(uid);
+                //pwd = DES.Decrypt(pwd);
                 String connstring = string.Format("DSN={0};Uid={1};Pwd={2}", dsn, uid, pwd);  //ODBC连接字符串
                 return connstring;
             }
