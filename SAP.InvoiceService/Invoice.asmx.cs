@@ -61,15 +61,11 @@ namespace SAP.InvoiceService
                     var sql = "SELECT  * FROM \"BS_SBO_1970_AR\".\"CBIC_AR\"";
                     if (DocEntry > 0)
                     {
-                        sql = sql + " where DocEntry=:DocEntry";
+                        sql = sql + " where \"CBIC_AR\".\"DocEntry\"=" + DocEntry;
                     }
                     using (OdbcCommand command = new OdbcCommand(sql))  //command  对象
                     {
                         command.Connection = connection;
-                        if (DocEntry > 0)
-                        {
-                            command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry", DbType = DbType.Int32, Value = DocEntry });
-                        }
                         OdbcDataReader reader = command.ExecuteReader();
 
                         while (reader.Read())
@@ -176,7 +172,18 @@ namespace SAP.InvoiceService
             return json;
         }
 
-        public string Z9EARS(string DocEntry, string U_ARH, string U_ARD, DateTime U_ARR, decimal U_ARE, string U_ARS)
+        /// <summary>
+        /// 回传函数
+        /// </summary>
+        /// <param name="DocEntry">单据主键</param>
+        /// <param name="U_ARH"></param>
+        /// <param name="U_ARD"></param>
+        /// <param name="U_ARQ"></param>
+        /// <param name="U_ARE"></param>
+        /// <param name="U_ARS"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string Z9EARS(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
         {
             var json = string.Empty;
             var result = new StandardResult();
@@ -189,11 +196,11 @@ namespace SAP.InvoiceService
             logger.Info("DocEntry:" + DocEntry);
             logger.Info("U_ARH:" + U_ARH);
             logger.Info("U_ARD:" + U_ARD);
-            logger.Info("U_ARR:" + U_ARR);
+            logger.Info("U_ARQ:" + U_ARQ);
             logger.Info("U_ARE:" + U_ARE);
             logger.Info("U_ARS:" + U_ARS);
 
-            if (string.IsNullOrWhiteSpace(DocEntry))
+            if (DocEntry <= 0)
             {
                 result.Code = "N";
                 result.Msg = "DocEntry参数不能为空";
@@ -222,16 +229,26 @@ namespace SAP.InvoiceService
                 using (OdbcConnection connection = new OdbcConnection(connstring))  //创建connection连接对象
                 {
                     connection.Open();  //打开链接
-                    var sql = "UPDATE \"BS_SBO_1970_AR\".\"CBIC_AR\" SET U_ARH = :U_ARH, U_ARD = :U_ARD, U_ARR = :U_ARR, U_ARE = :U_ARE, U_ARS = :U_ARS  WHERE DocEntry = :DocEntry ";
-                    using (OdbcCommand command = new OdbcCommand(sql))//command  对象
+                    var sql = new System.Text.StringBuilder();
+                    sql.Append("UPDATE \"BS_SBO_1970_AR\".\"OINV\" SET ");
+                    sql.AppendFormat("\"OINV\".\"U_ARH\" =\'{0}\',", U_ARH);
+                    sql.AppendFormat("\"OINV\".\"U_ARD\" =\'{0}\',", U_ARD);
+                    sql.AppendFormat("\"OINV\".\"U_ARQ\" =\'{0}\',", U_ARQ);
+                    sql.AppendFormat("\"OINV\".\"U_ARE\" =\'{0}\',", U_ARE);
+                    sql.AppendFormat("\"OINV\".\"U_ARS\" =\'{0}\'", U_ARS);
+                    sql.AppendFormat(" where \"OINV\".\"DocEntry\"={0}", DocEntry);
+
+                    var strSql = sql.ToString();
+
+                    using (OdbcCommand command = new OdbcCommand(strSql))//command  对象
                     {
                         command.Connection = connection;
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry" });
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARH" });
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARD" });
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARR" });
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARE" });
-                        command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARS" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARH" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARD" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARR" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARE" });
+                        //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARS" });
                         if (command.ExecuteNonQuery() > 0)
                         {
                             result.Code = "Y";
@@ -256,7 +273,6 @@ namespace SAP.InvoiceService
             return json;
         }
 
-
         private string GetOdbcConnectionString()
         {
             try
@@ -265,6 +281,9 @@ namespace SAP.InvoiceService
                 var uid = System.Configuration.ConfigurationManager.AppSettings["Uid"].ToString();
                 var pwd = System.Configuration.ConfigurationManager.AppSettings["Pwd"].ToString();
 
+                dsn = DES.Decrypt(dsn);
+                uid = DES.Decrypt(uid);
+                pwd = DES.Decrypt(pwd);
                 String connstring = string.Format("DSN={0};Uid={1};Pwd={2}", dsn, uid, pwd);  //ODBC连接字符串
                 return connstring;
             }

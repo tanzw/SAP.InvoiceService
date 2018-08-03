@@ -75,6 +75,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -83,9 +84,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\Class1.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Invoice.asmx.cs">
       <DependentUpon>Invoice.asmx</DependentUpon>
