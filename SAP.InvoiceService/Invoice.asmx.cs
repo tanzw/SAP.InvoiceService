@@ -24,7 +24,7 @@ namespace SAP.InvoiceService
         Logger logger = LogManager.GetCurrentClassLogger();
 
         [WebMethod]
-        public string HelloWorld()
+        public string Test()
         {
             logger.Info("");
             logger.Info("");
