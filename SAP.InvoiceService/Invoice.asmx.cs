@@ -26,7 +26,8 @@ namespace SAP.InvoiceService
         [WebMethod]
         public string Test()
         {
-
+            string str = "1-0-2-0-1-2-2";
+            str = str.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
 
             logger.Info("");
             logger.Info("");
@@ -122,6 +123,7 @@ namespace SAP.InvoiceService
 
             try
             {
+                U_ARS = U_ARS.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
                 result = Z9EARS_DLL(DocEntry, U_ARH, U_ARD, U_ARQ, U_ARE, U_ARS);
             }
             catch (Exception ex)
