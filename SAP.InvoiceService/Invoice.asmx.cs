@@ -162,7 +162,7 @@ namespace SAP.InvoiceService
                             DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt(),
                             DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt(),
                             TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime(),
-                            U_ARS = reader["U_ARS"] == null ? -1 : reader["U_ARS"].ToInt(),
+                            U_ARS = reader["U_ARS"] == null ? "" : reader["U_ARS"].ToString(),
                             U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString(),
 
                             CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString(),
@@ -273,30 +273,30 @@ namespace SAP.InvoiceService
 
                     while (reader.Read())
                     {
-                        list.Add(new InvoiceView()
-                        {
-                            DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt(),
-                            DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt(),
-                            TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime(),
-                            U_ARS = reader["U_ARS"] == null ? -1 : reader["U_ARS"].ToInt(),
-                            U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString(),
+                        var viewModel = new InvoiceView();
+                        viewModel.DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt();
+                        viewModel.DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt();
+                        viewModel.TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime();
+                        viewModel.U_ARS = reader["U_ARS"] == null ? "" : reader["U_ARS"].ToString();
+                        viewModel.U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString();
 
-                            CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString(),
-                            CardName = reader["CardName"] == null ? "" : reader["CardName"].ToString(),
-                            GTSRegNum = reader["GTSRegNum"] == null ? "" : reader["GTSRegNum"].ToString(),
-                            GTSBilAddr = reader["GTSBilAddr"] == null ? "" : reader["GTSBilAddr"].ToString(),
-                            Phone1 = reader["Phone1"] == null ? "" : reader["Phone1"].ToString(),
-                            U_CV_BankName = reader["U_CV_BankName"] == null ? "" : reader["U_CV_BankName"].ToString(),
-                            GTSBankAct = reader["GTSBankAct"] == null ? "" : reader["GTSBankAct"].ToString(),
+                        viewModel.CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString();
+                        viewModel.CardName = reader["CardName"] == null ? "" : reader["CardName"].ToString();
+                        viewModel.GTSRegNum = reader["GTSRegNum"] == null ? "" : reader["GTSRegNum"].ToString();
+                        viewModel.GTSBilAddr = reader["GTSBilAddr"] == null ? "" : reader["GTSBilAddr"].ToString();
+                        viewModel.Phone1 = reader["Phone1"] == null ? "" : reader["Phone1"].ToString();
+                        viewModel.U_CV_BankName = reader["U_CV_BankName"] == null ? "" : reader["U_CV_BankName"].ToString();
+                        viewModel.GTSBankAct = reader["GTSBankAct"] == null ? "" : reader["GTSBankAct"].ToString();
 
 
-                            LineNum = reader["LineNum"] == null ? -1 : reader["LineNum"].ToInt(),
-                            ItemCode = reader["ItemCode"] == null ? "" : reader["ItemCode"].ToString(),
-                            Quantity = reader["Quantity"] == null ? -1 : reader["Quantity"].ToDecimal(),
-                            unitMsr = reader["unitMsr"] == null ? "" : reader["unitMsr"].ToString(),
-                            VatPrcnt = reader["VatPrcnt"] == null ? -1 : reader["VatPrcnt"].ToDecimal(),
-                            GTotalSC = reader["GTotalSC"] == null ? -1 : reader["GTotalSC"].ToDecimal(),
-                        });
+                        viewModel.LineNum = reader["LineNum"] == null ? -1 : reader["LineNum"].ToInt();
+                        viewModel.ItemCode = reader["ItemCode"] == null ? "" : reader["ItemCode"].ToString();
+                        viewModel.Quantity = reader["Quantity"] == null ? -1 : reader["Quantity"].ToDecimal();
+                        viewModel.unitMsr = reader["unitMsr"] == null ? "" : reader["unitMsr"].ToString();
+                        viewModel.VatPrcnt = reader["VatPrcnt"] == null ? -1 : reader["VatPrcnt"].ToDecimal();
+                        viewModel.GTotalSC = reader["GTotalSC"] == null ? -1 : reader["GTotalSC"].ToDecimal();
+
+                        list.Add(viewModel);
                     }
                     reader.Close();
                 }
