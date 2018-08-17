@@ -24,7 +24,7 @@ namespace SAP.InvoiceService
         Logger logger = LogManager.GetCurrentClassLogger();
 
         [WebMethod]
-        public string Test()
+        public string Test(int a, int b, decimal c, string d)
         {
             string str = "1-0-2-0-1-2-2";
             str = str.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
@@ -32,8 +32,8 @@ namespace SAP.InvoiceService
             logger.Info("");
             logger.Info("");
             logger.Info("-----------------------------------调用开始------------------------------------");
-            logger.Info("请求函数:Z9EARS");
-            logger.Info("返回结果:");
+            logger.Info("请求函数:Test");
+            logger.Info("返回结果:Hello World");
             logger.Info("-----------------------------------调用结束------------------------------------");
             return "Hello World";
         }
@@ -66,73 +66,6 @@ namespace SAP.InvoiceService
                 result.Msg = "失败," + ex.Message;
             }
             json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-            logger.Info("-----------------------------------调用结束------------------------------------");
-            return json;
-        }
-
-        /// <summary>
-        /// 回传函数
-        /// </summary>
-        /// <param name="DocEntry">单据主键</param>
-        /// <param name="U_ARH"></param>
-        /// <param name="U_ARD"></param>
-        /// <param name="U_ARQ"></param>
-        /// <param name="U_ARE"></param>
-        /// <param name="U_ARS"></param>
-        /// <returns></returns>
-        [WebMethod]
-        public string Z9EARS(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
-        {
-            var json = string.Empty;
-            var result = new StandardResult();
-            logger.Info("");
-            logger.Info("");
-            logger.Info("-----------------------------------调用开始------------------------------------");
-            logger.Info("请求函数:Z9EARS");
-            logger.Info("请求时间:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            logger.Info("请求参数:");
-            logger.Info("DocEntry:" + DocEntry);
-            logger.Info("U_ARH:" + U_ARH);
-            logger.Info("U_ARD:" + U_ARD);
-            logger.Info("U_ARQ:" + U_ARQ);
-            logger.Info("U_ARE:" + U_ARE);
-            logger.Info("U_ARS:" + U_ARS);
-
-            if (DocEntry <= 0)
-            {
-                result.Code = "N";
-                result.Msg = "DocEntry参数不能为空";
-            }
-            if (string.IsNullOrWhiteSpace(U_ARH))
-            {
-                result.Code = "N";
-                result.Msg = "U_ARH参数不能为空";
-            }
-            if (string.IsNullOrWhiteSpace(U_ARS))
-            {
-                result.Code = "N";
-                result.Msg = "U_ARS参数不能为空";
-            }
-            if (result.Code == "N")
-            {
-                json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-                logger.Info("返回结果:" + json);
-                logger.Info("-----------------------------------调用结束------------------------------------");
-                return json;
-            }
-
-            try
-            {
-                U_ARS = U_ARS.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
-                result = Z9EARS_DLL(DocEntry, U_ARH, U_ARD, U_ARQ, U_ARE, U_ARS);
-            }
-            catch (Exception ex)
-            {
-                result.Code = "N";
-                result.Msg = ex.Message;
-            }
-            json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-            logger.Info("返回结果:" + json);
             logger.Info("-----------------------------------调用结束------------------------------------");
             return json;
         }
@@ -366,7 +299,74 @@ namespace SAP.InvoiceService
             return result;
         }
 
-        private StandardResult Z9EARS_DLL(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
+        /// <summary>
+        /// 回传函数
+        /// </summary>
+        /// <param name="DocEntry">单据主键</param>
+        /// <param name="U_ARH"></param>
+        /// <param name="U_ARD"></param>
+        /// <param name="U_ARQ"></param>
+        /// <param name="U_ARM"></param>
+        /// <param name="U_ARS"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string Z9EARS(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARM, string U_ARS)
+        {
+            var json = string.Empty;
+            var result = new StandardResult();
+            logger.Info("");
+            logger.Info("");
+            logger.Info("-----------------------------------调用开始------------------------------------");
+            logger.Info("请求函数:Z9EARS");
+            logger.Info("请求时间:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            logger.Info("请求参数:");
+            logger.Info("DocEntry:" + DocEntry);
+            logger.Info("U_ARH:" + U_ARH);
+            logger.Info("U_ARD:" + U_ARD);
+            logger.Info("U_ARQ:" + U_ARQ);
+            logger.Info("U_ARM:" + U_ARM);
+            logger.Info("U_ARS:" + U_ARS);
+
+            if (DocEntry <= 0)
+            {
+                result.Code = "N";
+                result.Msg = "DocEntry参数不能为空";
+            }
+            if (string.IsNullOrWhiteSpace(U_ARH))
+            {
+                result.Code = "N";
+                result.Msg = "U_ARH参数不能为空";
+            }
+            if (string.IsNullOrWhiteSpace(U_ARS))
+            {
+                result.Code = "N";
+                result.Msg = "U_ARS参数不能为空";
+            }
+            if (result.Code == "N")
+            {
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+                logger.Info("返回结果:" + json);
+                logger.Info("-----------------------------------调用结束------------------------------------");
+                return json;
+            }
+
+            try
+            {
+                U_ARS = U_ARS.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
+                result = Z9EARS_DLL(DocEntry, U_ARH, U_ARD, U_ARQ, U_ARM, U_ARS);
+            }
+            catch (Exception ex)
+            {
+                result.Code = "N";
+                result.Msg = ex.Message;
+            }
+            json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+            logger.Info("返回结果:" + json);
+            logger.Info("-----------------------------------调用结束------------------------------------");
+            return json;
+        }
+
+        private StandardResult Z9EARS_DLL(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARM, string U_ARS)
         {
             var result = new StandardResult();
             var connstring = GetDllConnectionString();
@@ -380,7 +380,7 @@ namespace SAP.InvoiceService
                 sql.AppendFormat("\"OINV\".\"U_ARH\" =\'{0}\',", U_ARH);
                 sql.AppendFormat("\"OINV\".\"U_ARD\" =\'{0}\',", U_ARD);
                 sql.AppendFormat("\"OINV\".\"U_ARQ\" =\'{0}\',", U_ARQ);
-                sql.AppendFormat("\"OINV\".\"U_ARE\" =\'{0}\',", U_ARE);
+                sql.AppendFormat("\"OINV\".\"U_ARM\" =\'{0}\',", U_ARM);
                 sql.AppendFormat("\"OINV\".\"U_ARS\" =\'{0}\'", U_ARS);
                 sql.AppendFormat(" where \"OINV\".\"DocEntry\"={0}", DocEntry);
 
@@ -402,53 +402,11 @@ namespace SAP.InvoiceService
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARH", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARH });
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARD", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARD });
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARQ", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARQ });
-                    command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARE", HanaDbType = Sap.Data.Hana.HanaDbType.Decimal, Value = U_ARE });
+                    command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARM", HanaDbType = Sap.Data.Hana.HanaDbType.Decimal, Value = U_ARM });
 
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARS", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARS });
 
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                        result.Code = "Y";
-                        result.Msg = "成功";
-                    }
-                    else
-                    {
-                        result.Code = "N";
-                        result.Msg = "失败,更新影响行数为0";
-                    }
-                }
-            }
-            return result;
-        }
-
-        private StandardResult Z9EARS_ODBC(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
-        {
-            var result = new StandardResult();
-            var connstring = GetOdbcConnectionString();
-            using (OdbcConnection connection = new OdbcConnection(connstring))  //创建connection连接对象
-            {
-                connection.Open();  //打开链接
-                var sql = new System.Text.StringBuilder();
-                sql.Append("UPDATE \"BS_SBO_1970_AR\".\"OINV\" SET ");
-                sql.AppendFormat("\"OINV\".\"U_ARH\" =\'{0}\',", U_ARH);
-                sql.AppendFormat("\"OINV\".\"U_ARD\" =\'{0}\',", U_ARD);
-                sql.AppendFormat("\"OINV\".\"U_ARQ\" =\'{0}\',", U_ARQ);
-                sql.AppendFormat("\"OINV\".\"U_ARE\" =\'{0}\',", U_ARE);
-                sql.AppendFormat("\"OINV\".\"U_ARS\" =\'{0}\'", U_ARS);
-                sql.AppendFormat(" where \"OINV\".\"DocEntry\"={0}", DocEntry);
-
-                var strSql = sql.ToString();
-
-                using (OdbcCommand command = new OdbcCommand(strSql))//command  对象
-                {
-                    command.Connection = connection;
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARH" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARD" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARR" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARE" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARS" });
                     if (command.ExecuteNonQuery() > 0)
                     {
                         result.Code = "Y";
