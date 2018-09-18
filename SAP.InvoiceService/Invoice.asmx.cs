@@ -26,15 +26,20 @@ namespace SAP.InvoiceService
         [WebMethod]
         public string Test()
         {
+            string str = "vnFp+ZmAKmpr2rpnaqkYNLpXC1LscvDgN1WKOIMxozcNXvAH1JUqA1x70Rq6JlfmtUKdYMch4zgffNO3e74Tc/Fka+UjC/JVt6q0XJ6Fk9Q=";
+            var res = SecurityEncrypt.AesDecrypt(str);
+            return res;
 
+            //string str = "1-0-2-0-1-2-2";
+            //str = str.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
 
-            logger.Info("");
-            logger.Info("");
-            logger.Info("-----------------------------------调用开始------------------------------------");
-            logger.Info("请求函数:Z9EARS");
-            logger.Info("返回结果:");
-            logger.Info("-----------------------------------调用结束------------------------------------");
-            return "Hello World";
+            //logger.Info("");
+            //logger.Info("");
+            //logger.Info("-----------------------------------调用开始------------------------------------");
+            //logger.Info("请求函数:Z9EARS");
+            //logger.Info("返回结果:");
+            //logger.Info("-----------------------------------调用结束------------------------------------");
+            //return "Hello World";
         }
 
         /// <summary>
@@ -69,72 +74,6 @@ namespace SAP.InvoiceService
             return json;
         }
 
-        /// <summary>
-        /// 回传函数
-        /// </summary>
-        /// <param name="DocEntry">单据主键</param>
-        /// <param name="U_ARH"></param>
-        /// <param name="U_ARD"></param>
-        /// <param name="U_ARQ"></param>
-        /// <param name="U_ARE"></param>
-        /// <param name="U_ARS"></param>
-        /// <returns></returns>
-        [WebMethod]
-        public string Z9EARS(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
-        {
-            var json = string.Empty;
-            var result = new StandardResult();
-            logger.Info("");
-            logger.Info("");
-            logger.Info("-----------------------------------调用开始------------------------------------");
-            logger.Info("请求函数:Z9EARS");
-            logger.Info("请求时间:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            logger.Info("请求参数:");
-            logger.Info("DocEntry:" + DocEntry);
-            logger.Info("U_ARH:" + U_ARH);
-            logger.Info("U_ARD:" + U_ARD);
-            logger.Info("U_ARQ:" + U_ARQ);
-            logger.Info("U_ARE:" + U_ARE);
-            logger.Info("U_ARS:" + U_ARS);
-
-            if (DocEntry <= 0)
-            {
-                result.Code = "N";
-                result.Msg = "DocEntry参数不能为空";
-            }
-            if (string.IsNullOrWhiteSpace(U_ARH))
-            {
-                result.Code = "N";
-                result.Msg = "U_ARH参数不能为空";
-            }
-            if (string.IsNullOrWhiteSpace(U_ARS))
-            {
-                result.Code = "N";
-                result.Msg = "U_ARS参数不能为空";
-            }
-            if (result.Code == "N")
-            {
-                json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-                logger.Info("返回结果:" + json);
-                logger.Info("-----------------------------------调用结束------------------------------------");
-                return json;
-            }
-
-            try
-            {
-                result = Z9EARS_DLL(DocEntry, U_ARH, U_ARD, U_ARQ, U_ARE, U_ARS);
-            }
-            catch (Exception ex)
-            {
-                result.Code = "N";
-                result.Msg = ex.Message;
-            }
-            json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-            logger.Info("返回结果:" + json);
-            logger.Info("-----------------------------------调用结束------------------------------------");
-            return json;
-        }
-
         private SearchResult<List<InvoiceModel>> Z9EAR_ODBC(int DocEntry, List<InvoiceView> list)
         {
             var result = new SearchResult<List<InvoiceModel>>();
@@ -160,7 +99,7 @@ namespace SAP.InvoiceService
                             DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt(),
                             DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt(),
                             TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime(),
-                            U_ARS = reader["U_ARS"] == null ? -1 : reader["U_ARS"].ToInt(),
+                            U_ARS = reader["U_ARS"] == null ? "" : reader["U_ARS"].ToString(),
                             U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString(),
 
                             CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString(),
@@ -259,7 +198,7 @@ namespace SAP.InvoiceService
             using (Sap.Data.Hana.HanaConnection connection = new Sap.Data.Hana.HanaConnection(connstring))  //创建connection连接对象
             {
                 connection.Open();  //打开链接
-                var sql = "SELECT  * FROM \"BS_SBO_1970_AR\".\"CBIC_AR\"";
+                var sql = "SELECT  * FROM \"" + GetDbName() + "\".\"CBIC_AR\"";
                 if (DocEntry > 0)
                 {
                     sql = sql + " where \"CBIC_AR\".\"DocEntry\"=" + DocEntry;
@@ -271,30 +210,31 @@ namespace SAP.InvoiceService
 
                     while (reader.Read())
                     {
-                        list.Add(new InvoiceView()
-                        {
-                            DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt(),
-                            DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt(),
-                            TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime(),
-                            U_ARS = reader["U_ARS"] == null ? -1 : reader["U_ARS"].ToInt(),
-                            U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString(),
+                        var viewModel = new InvoiceView();
+                        viewModel.DocEntry = reader["DocEntry"] == null ? -1 : reader["DocEntry"].ToInt();
+                        viewModel.DocNum = reader["DocNum"] == null ? -1 : reader["DocNum"].ToInt();
+                        viewModel.TaxDate = reader["TaxDate"] == null ? DateTime.MinValue : reader["TaxDate"].ToDateTime();
+                        viewModel.U_ARS = reader["U_ARS"] == null ? "" : reader["U_ARS"].ToString();
+                        viewModel.U_ART = reader["U_ART"] == null ? "" : reader["U_ART"].ToString();
+                        viewModel.U_ARC = reader["U_ARC"] == null ? "" : reader["U_ARC"].ToString();
 
-                            CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString(),
-                            CardName = reader["CardName"] == null ? "" : reader["CardName"].ToString(),
-                            GTSRegNum = reader["GTSRegNum"] == null ? "" : reader["GTSRegNum"].ToString(),
-                            GTSBilAddr = reader["GTSBilAddr"] == null ? "" : reader["GTSBilAddr"].ToString(),
-                            Phone1 = reader["Phone1"] == null ? "" : reader["Phone1"].ToString(),
-                            U_CV_BankName = reader["U_CV_BankName"] == null ? "" : reader["U_CV_BankName"].ToString(),
-                            GTSBankAct = reader["GTSBankAct"] == null ? "" : reader["GTSBankAct"].ToString(),
+                        viewModel.CardCode = reader["CardCode"] == null ? "" : reader["CardCode"].ToString();
+                        viewModel.CardName = reader["CardName"] == null ? "" : reader["CardName"].ToString();
+                        viewModel.GTSRegNum = reader["GTSRegNum"] == null ? "" : reader["GTSRegNum"].ToString();
+                        viewModel.GTSBilAddr = reader["GTSBilAddr"] == null ? "" : reader["GTSBilAddr"].ToString();
+                        viewModel.Phone1 = reader["Phone1"] == null ? "" : reader["Phone1"].ToString();
+                        viewModel.U_CV_BankName = reader["U_CV_BankName"] == null ? "" : reader["U_CV_BankName"].ToString();
+                        viewModel.GTSBankAct = reader["GTSBankAct"] == null ? "" : reader["GTSBankAct"].ToString();
 
 
-                            LineNum = reader["LineNum"] == null ? -1 : reader["LineNum"].ToInt(),
-                            ItemCode = reader["ItemCode"] == null ? "" : reader["ItemCode"].ToString(),
-                            Quantity = reader["Quantity"] == null ? -1 : reader["Quantity"].ToDecimal(),
-                            unitMsr = reader["unitMsr"] == null ? "" : reader["unitMsr"].ToString(),
-                            VatPrcnt = reader["VatPrcnt"] == null ? -1 : reader["VatPrcnt"].ToDecimal(),
-                            GTotalSC = reader["GTotalSC"] == null ? -1 : reader["GTotalSC"].ToDecimal(),
-                        });
+                        viewModel.LineNum = reader["LineNum"] == null ? -1 : reader["LineNum"].ToInt();
+                        viewModel.ItemCode = reader["ItemCode"] == null ? "" : reader["ItemCode"].ToString();
+                        viewModel.Quantity = reader["Quantity"] == null ? -1 : reader["Quantity"].ToDecimal();
+                        viewModel.unitMsr = reader["unitMsr"] == null ? "" : reader["unitMsr"].ToString();
+                        viewModel.VatPrcnt = reader["VatPrcnt"] == null ? -1 : reader["VatPrcnt"].ToDecimal();
+                        viewModel.GTotalSC = reader["GTotalSC"] == null ? -1 : reader["GTotalSC"].ToDecimal();
+
+                        list.Add(viewModel);
                     }
                     reader.Close();
                 }
@@ -364,7 +304,74 @@ namespace SAP.InvoiceService
             return result;
         }
 
-        private StandardResult Z9EARS_DLL(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
+        /// <summary>
+        /// 回传函数
+        /// </summary>
+        /// <param name="DocEntry">单据主键</param>
+        /// <param name="U_ARH"></param>
+        /// <param name="U_ARD"></param>
+        /// <param name="U_ARQ"></param>
+        /// <param name="U_ARM"></param>
+        /// <param name="U_ARS"></param>
+        /// <returns></returns>
+        [WebMethod]
+        public string Z9EARS(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARM, string U_ARS)
+        {
+            var json = string.Empty;
+            var result = new StandardResult();
+            logger.Info("");
+            logger.Info("");
+            logger.Info("-----------------------------------调用开始------------------------------------");
+            logger.Info("请求函数:Z9EARS");
+            logger.Info("请求时间:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            logger.Info("请求参数:");
+            logger.Info("DocEntry:" + DocEntry);
+            logger.Info("U_ARH:" + U_ARH);
+            logger.Info("U_ARD:" + U_ARD);
+            logger.Info("U_ARQ:" + U_ARQ);
+            logger.Info("U_ARM:" + U_ARM);
+            logger.Info("U_ARS:" + U_ARS);
+
+            if (DocEntry <= 0)
+            {
+                result.Code = "N";
+                result.Msg = "DocEntry参数不能为空";
+            }
+            if (string.IsNullOrWhiteSpace(U_ARH))
+            {
+                result.Code = "N";
+                result.Msg = "U_ARH参数不能为空";
+            }
+            if (string.IsNullOrWhiteSpace(U_ARS))
+            {
+                result.Code = "N";
+                result.Msg = "U_ARS参数不能为空";
+            }
+            if (result.Code == "N")
+            {
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+                logger.Info("返回结果:" + json);
+                logger.Info("-----------------------------------调用结束------------------------------------");
+                return json;
+            }
+
+            try
+            {
+                U_ARS = U_ARS.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
+                result = Z9EARS_DLL(DocEntry, U_ARH, U_ARD, U_ARQ, U_ARM, U_ARS);
+            }
+            catch (Exception ex)
+            {
+                result.Code = "N";
+                result.Msg = ex.Message;
+            }
+            json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+            logger.Info("返回结果:" + json);
+            logger.Info("-----------------------------------调用结束------------------------------------");
+            return json;
+        }
+
+        private StandardResult Z9EARS_DLL(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARM, string U_ARS)
         {
             var result = new StandardResult();
             var connstring = GetDllConnectionString();
@@ -374,11 +381,11 @@ namespace SAP.InvoiceService
                 var sql = new System.Text.StringBuilder();
 
                 //SQL拼接,无参数化
-                sql.Append("UPDATE \"BS_SBO_1970_AR\".\"OINV\" SET ");
+                sql.Append("UPDATE \"" + GetDbName() + "\".\"OINV\" SET ");
                 sql.AppendFormat("\"OINV\".\"U_ARH\" =\'{0}\',", U_ARH);
                 sql.AppendFormat("\"OINV\".\"U_ARD\" =\'{0}\',", U_ARD);
                 sql.AppendFormat("\"OINV\".\"U_ARQ\" =\'{0}\',", U_ARQ);
-                sql.AppendFormat("\"OINV\".\"U_ARE\" =\'{0}\',", U_ARE);
+                sql.AppendFormat("\"OINV\".\"U_ARM\" =\'{0}\',", U_ARM);
                 sql.AppendFormat("\"OINV\".\"U_ARS\" =\'{0}\'", U_ARS);
                 sql.AppendFormat(" where \"OINV\".\"DocEntry\"={0}", DocEntry);
 
@@ -400,53 +407,11 @@ namespace SAP.InvoiceService
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARH", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARH });
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARD", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARD });
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARQ", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARQ });
-                    command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARE", HanaDbType = Sap.Data.Hana.HanaDbType.Decimal, Value = U_ARE });
+                    command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARM", HanaDbType = Sap.Data.Hana.HanaDbType.Decimal, Value = U_ARM });
 
                     command.Parameters.Add(new Sap.Data.Hana.HanaParameter() { ParameterName = ":U_ARS", HanaDbType = Sap.Data.Hana.HanaDbType.VarChar, Value = U_ARS });
 
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                        result.Code = "Y";
-                        result.Msg = "成功";
-                    }
-                    else
-                    {
-                        result.Code = "N";
-                        result.Msg = "失败,更新影响行数为0";
-                    }
-                }
-            }
-            return result;
-        }
-
-        private StandardResult Z9EARS_ODBC(int DocEntry, string U_ARH, string U_ARD, string U_ARQ, decimal U_ARE, string U_ARS)
-        {
-            var result = new StandardResult();
-            var connstring = GetOdbcConnectionString();
-            using (OdbcConnection connection = new OdbcConnection(connstring))  //创建connection连接对象
-            {
-                connection.Open();  //打开链接
-                var sql = new System.Text.StringBuilder();
-                sql.Append("UPDATE \"BS_SBO_1970_AR\".\"OINV\" SET ");
-                sql.AppendFormat("\"OINV\".\"U_ARH\" =\'{0}\',", U_ARH);
-                sql.AppendFormat("\"OINV\".\"U_ARD\" =\'{0}\',", U_ARD);
-                sql.AppendFormat("\"OINV\".\"U_ARQ\" =\'{0}\',", U_ARQ);
-                sql.AppendFormat("\"OINV\".\"U_ARE\" =\'{0}\',", U_ARE);
-                sql.AppendFormat("\"OINV\".\"U_ARS\" =\'{0}\'", U_ARS);
-                sql.AppendFormat(" where \"OINV\".\"DocEntry\"={0}", DocEntry);
-
-                var strSql = sql.ToString();
-
-                using (OdbcCommand command = new OdbcCommand(strSql))//command  对象
-                {
-                    command.Connection = connection;
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":DocEntry" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARH" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARD" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARR" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARE" });
-                    //command.Parameters.Add(new OdbcParameter() { ParameterName = ":U_ARS" });
                     if (command.ExecuteNonQuery() > 0)
                     {
                         result.Code = "Y";
@@ -488,15 +453,25 @@ namespace SAP.InvoiceService
             try
             {
                 var strCon = System.Configuration.ConfigurationManager.AppSettings["SAPConnectionString"].ToString();
-
-
-                var s = SecurityEncrypt.AesDecrypt(strCon);
-
-                return s;
+                //var s = SecurityEncrypt.AesDecrypt(strCon);
+                return strCon;
             }
             catch
             {
                 throw new Exception("配置文件中缺少HANA相关连接信息");
+            }
+        }
+
+        private string GetDbName()
+        {
+            try
+            {
+                var dbName = System.Configuration.ConfigurationManager.AppSettings["DbName"].ToString();
+                return dbName;
+            }
+            catch
+            {
+                throw new Exception("配置文件中缺少数据库名称");
             }
         }
     }

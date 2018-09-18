@@ -25,7 +25,7 @@ namespace SAP.InvoiceService.Model
         /// <summary>
         /// 发票状态
         /// </summary>
-        public int U_ARS { get; set; }
+        public string U_ARS { get; set; }
 
         /// <summary>
         /// 发票类型
@@ -141,7 +141,7 @@ namespace SAP.InvoiceService.Model
         /// <summary>
         /// 发票状态
         /// </summary>
-        public int U_ARS { get; set; }
+        public string U_ARS { get; set; }
 
         /// <summary>
         /// 发票类型
