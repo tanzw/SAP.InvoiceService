@@ -454,7 +454,7 @@ namespace SAP.InvoiceService
             {
                 var strCon = System.Configuration.ConfigurationManager.AppSettings["SAPConnectionString"].ToString();
                 //var s = SecurityEncrypt.AesDecrypt(strCon);
-                return strCon;
+                return strCon; 
             }
             catch
             {
