@@ -13,7 +13,7 @@ namespace SAP.InvoiceService.Extensions
         private static string key = "WELL.SAP.INVOICESERVICE.20180804";
         private static string iv = "AOIWENSLA";
         /// <summary>
-        /// DES 加密
+        /// DES 加密111
         /// </summary>
         public static string DESEncrypt(string value)
         {
