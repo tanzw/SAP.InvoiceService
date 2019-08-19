@@ -30,7 +30,7 @@ namespace SAP.InvoiceService
             var res = SecurityEncrypt.AesDecrypt(str);
             return res;
 
-            //string str = "1-0-2-0-1-2-2";
+            //string str = "1-0-2-0-1-2-3-2";
             //str = str.Replace("0", "作废").Replace("1", "正常").Replace("2", "冲红");
 
             //logger.Info("");
